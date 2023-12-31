@@ -1,1 +1,1 @@
-![Particle Collision Simulation](particle_simulation.gif)
+![description here](particle_simulation.gif)
