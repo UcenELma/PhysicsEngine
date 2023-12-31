@@ -1,1 +1,1 @@
-![description here]((particule_collision.gif)
+![description here]((particle_collision.gif)
