@@ -1,1 +1,1 @@
-![Fission simulation](Fission.gif)
+![Fission simulation](fission.gif)
