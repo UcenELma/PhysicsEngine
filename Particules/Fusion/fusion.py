@@ -8,7 +8,6 @@ pygame.init()
 # Constants
 WIDTH, HEIGHT = 800, 600
 FPS = 60
-SQUARE_SIZE = 300  # Size of the square in which particles are confined
 
 # Colors
 WHITE = (255, 255, 255)
@@ -29,15 +28,10 @@ class Particle:
         self.x += self.speed * math.cos(self.angle)
         self.y += self.speed * math.sin(self.angle)
 
-        # Collision with square boundaries
-        left_boundary = (WIDTH - SQUARE_SIZE) // 2 + self.radius
-        right_boundary = (WIDTH + SQUARE_SIZE) // 2 - self.radius
-        top_boundary = (HEIGHT - SQUARE_SIZE) // 2 + self.radius
-        bottom_boundary = (HEIGHT + SQUARE_SIZE) // 2 - self.radius
-
-        if self.x < left_boundary or self.x > right_boundary:
+        # Reflect particles off the boundaries
+        if self.x - self.radius < 0 or self.x + self.radius > WIDTH:
             self.angle = math.pi - self.angle
-        if self.y < top_boundary or self.y > bottom_boundary:
+        if self.y - self.radius < 0 or self.y + self.radius > HEIGHT:
             self.angle = -self.angle
 
     def draw(self, screen):
@@ -47,11 +41,9 @@ class Particle:
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Fusion Particle Simulation")
 
-# Create initial particles within the square
-square_left = (WIDTH - SQUARE_SIZE) // 2
-square_top = (HEIGHT - SQUARE_SIZE) // 2
-particles = [Particle(random.randint(square_left + 50, square_left + SQUARE_SIZE - 50), random.randint(square_top + 50, square_top + SQUARE_SIZE - 50), 8, BLUE, 3),
-             Particle(random.randint(square_left + 50, square_left + SQUARE_SIZE - 50), random.randint(square_top + 50, square_top + SQUARE_SIZE - 50), 8, BLUE, 3)]
+# Create initial particles within the cadre
+particles = [Particle(random.randint(50, WIDTH - 50), random.randint(50, HEIGHT - 50), 8, BLUE, 3),
+             Particle(random.randint(50, WIDTH - 50), random.randint(50, HEIGHT - 50), 8, BLUE, 3)]
 
 # Main loop
 clock = pygame.time.Clock()
@@ -70,16 +62,13 @@ while running:
     # Draw background
     screen.fill(WHITE)
 
-    # Draw square
-    pygame.draw.rect(screen, BLUE, (square_left, square_top, SQUARE_SIZE, SQUARE_SIZE), 1)
-
     # Draw particles
     for particle in particles:
         particle.draw(screen)
 
     # Check for fusion when particles collide
-    if not fusion_triggered and pygame.Rect.colliderect(pygame.Rect(particles[0].x - particles[0].radius, particles[0].y - particles[0].radius, particles[0].radius*2, particles[0].radius*2),
-                                                        pygame.Rect(particles[1].x - particles[1].radius, particles[1].y - particles[1].radius, particles[1].radius*2, particles[1].radius*2)):
+    if not fusion_triggered and pygame.Rect.colliderect(pygame.Rect(particles[0].x, particles[0].y, particles[0].radius, particles[0].radius),
+                                                        pygame.Rect(particles[1].x, particles[1].y, particles[1].radius, particles[1].radius)):
         # Fusion event (combine particles)
         particles[0].color = RED  # Change color to indicate fusion
         particles[0].radius += particles[1].radius
